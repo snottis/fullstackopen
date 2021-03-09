@@ -56,19 +56,24 @@ const App = () => {
       }
       return;
     }
-    personsService.create({ name: newName, number: newNumber }).then((data) => {
-      setPersons(persons.concat(data));
-      setNewName('');
-      setNewNumber('');
-      notification.success(`Added ${data.name}`, setErrorMessage);
-    });
+    personsService
+      .create({ name: newName, number: newNumber })
+      .then((data) => {
+        setPersons(persons.concat(data));
+        setNewName('');
+        setNewNumber('');
+        notification.success(`Added ${data.name}`, setErrorMessage);
+      })
+      .catch((err) => {
+        notification.failure(err.response.data.error, setErrorMessage);
+      });
   };
 
   const removeButton = (event) => {
-    let name = persons.find((p) => p.id === Number(event.target.value)).name;
+    let name = persons.find((p) => p.id === event.target.value).name;
     if (window.confirm(`Delete ${name} ?`)) {
       personsService.remove(event.target.value).then((data) => {
-        setPersons(persons.filter((p) => p.id !== Number(event.target.value)));
+        setPersons(persons.filter((p) => p.id !== event.target.value));
       });
       notification.success(`Deleted ${name}`, setErrorMessage);
     }
