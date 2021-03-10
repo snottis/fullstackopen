@@ -1,9 +1,8 @@
 const errorHandler = (err, req, res, next) => {
-    console.log(err)
     if(err.name == 'ValidationError')
-        res.status(400).end()
+        res.status(400).json({error: err.message})
     else
-        res.status(400).end()
+        res.status(400).json({error: err.message})
 }
 
 module.exports = errorHandler

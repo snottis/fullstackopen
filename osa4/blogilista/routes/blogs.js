@@ -17,9 +17,7 @@ blogsRouter.post('/api/blogs', async (request, response) => {
 })
 
 blogsRouter.delete('/api/blogs/:id', async (req, res) => {
-    console.log('param', req.params.id)
     const result = await Blog.findByIdAndRemove(req.params.id)
-    console.log(result)
     res.status(200).json(result)
 })
 
