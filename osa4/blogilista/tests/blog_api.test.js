@@ -1,7 +1,16 @@
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+
+
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
+const config = require('../utils/config')
+
+
+
 
 
 const initialBlogs = [
@@ -55,12 +64,41 @@ const initialBlogs = [
     }  
 ]
 
-
 const api = supertest(app)
+let user1
+let user2
+
+beforeAll(async () => {
+    const initialUsers = [
+        {
+            username: 'user1',
+            name: 'User First',
+            passwordHash: await bcrypt.hash('salasana', 1)
+        },
+        { 
+            username: 'user2', 
+            name: 'Secondary User', 
+            passwordHash: await bcrypt.hash('sala', 1)
+        }
+    ]
+    User.insert
+    await User.deleteMany({})
+    let user = new User(initialUsers[0])
+    await user.save()
+    user1 = jwt.sign({username: user.username, id: user._id}, process.env.SECRET)
+    user = new User(initialUsers[1])
+    await user.save()
+    user2 = jwt.sign({username: user.username, id: user._id}, process.env.SECRET)
+})
 
 beforeEach(async () => {
+    const creator = await User.findOne({username: 'user1'})
+    const blogsWithUser = initialBlogs.map(a => {
+        a.user = creator._id
+        return a
+    })
     await Blog.deleteMany({})
-    await Blog.insertMany(initialBlogs)
+    await Blog.insertMany(blogsWithUser)
 })
 
 afterAll(() => {
@@ -78,27 +116,31 @@ test('if id is defined', async () => {
 })
 
 test('POST blog', async () => {
-    const res = await api.post('/api/blogs').send({title: 'new', author: 'new guy', url: 'localhost', likes: 99})
+    const res = await api.post('/api/blogs').set('Authorization', `Bearer ${user2}`).send({title: 'new', author: 'new guy', url: 'localhost', likes: 99}).expect(201)
     expect(res.body.title).toBe('new')
     const count = await Blog.countDocuments()
     expect(count).toBe(initialBlogs.length+1)
+}) 
+
+test('POST blog without jwt should fail', async () => {
+    const res = await api.post('/api/blogs').send({title: 'new', author: 'new guy', url: 'localhost', likes: 99}).expect(401)
 })
 
 test('Likes get default value 0', async () => {
     const newBlog = {title: 'new', author: 'new guy', url: 'localhost'}
-    const res = await api.post('/api/blogs').send(newBlog)
+    const res = await api.post('/api/blogs').set('Authorization', `Bearer ${user2}`).send(newBlog)
     expect(res.body.likes).toBe(0)
 })
 
 test('Require title and url', async () => {
     const newBlog = {author: 'new guy'}
-    const res = await api.post('/api/blogs').send(newBlog)
+    const res = await api.post('/api/blogs').set('Authorization', `Bearer ${user2}`).send(newBlog)
     expect(res.status).toBe(400)
 })
 
 test('test delete', async () => {
     const blogs = await Blog.find({})
-    const res = await api.delete(`/api/blogs/${blogs[0]._id}`)
+    const res = await api.delete(`/api/blogs/${blogs[0]._id}`).set('Authorization', `Bearer ${user1}`)
     const count = await Blog.countDocuments()
     expect(count).toBe(initialBlogs.length-1)
 })
