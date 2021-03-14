@@ -1,4 +1,5 @@
-import React from 'react';
+import propTypes from 'prop-types';
+
 
 const Notification = ({ notification }) => {
   if (!notification) {
@@ -6,6 +7,10 @@ const Notification = ({ notification }) => {
   }
 
   return <div className={notification.type}>{notification.message}</div>;
+};
+
+Notification.propTypes = {
+  notification: propTypes.object
 };
 
 export default Notification;
