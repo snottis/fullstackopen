@@ -21,7 +21,7 @@ const AddBlog = ({createBlog}) => {
                 title<input id="title" value={title} onChange={({target}) => settitle(target.value)} type='text'/><br/>
                 author<input id="author" value={author} onChange={({target}) => setauthor(target.value)} type='text'/><br/>
                 url<input id="url" value={url} onChange={({target}) => seturl(target.value)} type="text"/><br/>
-                <button onClick={handleCreation} type="submit">create</button>
+                <button id="create" onClick={handleCreation} type="submit">create</button>
             </form>
         </div>
     );

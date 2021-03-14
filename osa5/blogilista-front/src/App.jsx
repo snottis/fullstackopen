@@ -42,6 +42,7 @@ const App = () => {
   const createBlog = async (newBlog) => {
     addBlogRef.current.toggleVisibility();
     const res = await blogService.post(newBlog);
+    console.log(res);
     if(res.error) {
         notification.failure(res.data.error.message, setNotif);
     }
@@ -114,9 +115,9 @@ const App = () => {
         <h2>log in to application</h2>
         <Notification notification={notif}/>
         <form>
-        username<input value={userName} onChange={({target}) => setuserName(target.value)} type="text" /><br/>
-        password<input value={password} onChange={({target}) => setpassword(target.value)} type="password" /> <br/>
-        <button type="submit" onClick={handleLogin}>log in</button>
+        username<input id="username" value={userName} onChange={({target}) => setuserName(target.value)} type="text" /><br/>
+        password<input id="password" value={password} onChange={({target}) => setpassword(target.value)} type="password" /> <br/>
+        <button id="logIn" type="submit" onClick={handleLogin}>log in</button>
         </form>
       </div>
     );

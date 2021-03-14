@@ -2,11 +2,13 @@
     "extends": "eslint:recommended",
     "env": {
       "browser": true,
-      "jest/globals": true
+      "jest/globals": true,
+      "cypress/globals": true
     },
     "plugins": [
       "react",
-      "jest"
+      "jest",
+      "cypress"
     ],
     "rules": {
       "semi": "error",

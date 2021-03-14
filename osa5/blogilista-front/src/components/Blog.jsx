@@ -6,7 +6,7 @@ const Blog = ({ blog, updateBlog, user, removeBlog }) => {
 
   const [visible, setvisible] = useState(false);
   const showWhenVisible = {display: visible ? '' : 'none'};
-  const showWhenUser = {display: user.username === blog.user.username ? '' : 'none'};
+  const showWhenUser = {display: user.username == blog.user.username ? '' : 'none'};
 
   const handleLike = () => {
     updateBlog(blog);
@@ -25,13 +25,13 @@ const Blog = ({ blog, updateBlog, user, removeBlog }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className="blogOutest" style={blogStyle}>
       <div className="blogDefaults"> 
-        {blog.title} {blog.author} <button onClick={() => setvisible(!visible)}>{visible ? 'hide' : 'view'}</button>
+        {blog.title} {blog.author} <button className="viewButton" onClick={() => setvisible(!visible)}>{visible ? 'hide' : 'view'}</button>
       </div>
       <div style={showWhenVisible} className="togglableContent">
         <div>{blog.url}</div>
-        <div>likes {blog.likes} <button className="likeButton" onClick={handleLike}>like</button></div>
+        <div>likes <span className="likes">{blog.likes}</span> <button className="likeButton" onClick={handleLike}>like</button></div>
         <div>{blog.user.name}</div>
         <div style={showWhenUser}>
           <button onClick={handleRemove}>remove</button>
