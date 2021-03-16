@@ -48,6 +48,7 @@ export const addAnecdote = (content) => {
 export const initializeAnecdotes = () => {
   return async dispatch => {
     const anecdotes = await service.getAll()
+    console.log(anecdotes)
     dispatch({
       type: 'INIT_ANECDOTES',
       data: anecdotes
