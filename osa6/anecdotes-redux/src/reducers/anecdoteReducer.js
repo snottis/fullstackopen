@@ -1,3 +1,7 @@
+import service from '../services/anecdotes'
+
+
+
 const anecdotesAtStart = [
   'If it hurts, do it more often',
   'Adding manpower to a late software project makes it later!',
@@ -25,18 +29,35 @@ const aSort = (a,b) => {
   else
     return -1
 }
-
-export const addVote = (id) => {
-  return {type: 'VOTE', data: {id}}
+ 
+export const addVote = (anecdote) => {
+  return async dispatch => {
+    anecdote.votes += 1
+    const res = await service.put(anecdote)
+    dispatch({type: 'VOTE', data: anecdote.id})
+  }
 }
 
 export const addAnecdote = (content) => {
-  return {type: 'ADD', data: asObject(content)}
+  return async dispatch => {
+    const anecdote = await service.post(asObject(content))
+    dispatch({type: 'ADD', data: anecdote})
+  }
+}
+
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await service.getAll()
+    dispatch({
+      type: 'INIT_ANECDOTES',
+      data: anecdotes
+    })
+  }
 }
 
 const initialState = anecdotesAtStart.map(asObject)
 
-const reducer = (state = initialState, action) => {
+const reducer = (state =  [], action) => {
   switch(action.type) {
     case 'VOTE':
       return state.map(anecdote => {
@@ -47,6 +68,8 @@ const reducer = (state = initialState, action) => {
       }).sort(aSort)
     case 'ADD':
       return state.concat(action.data).sort(aSort)
+    case 'INIT_ANECDOTES':
+      return action.data.sort(aSort)
     default:
       return state
   }
