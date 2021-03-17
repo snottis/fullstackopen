@@ -4,6 +4,10 @@ import blogService from './services/blogs';
 import login from './services/login';
 import AddBlog from './components/AddBlog';
 import Notification from './components/Notification';
+import {
+  BrowserRouter as Router,
+  Route, Switch} from 'react-router-dom';
+import UserList from './components/UserList';
 
 
 
@@ -117,13 +121,21 @@ const App = () => {
     );
   }
   return (
-    <div>
+    <Router>
       <h2>blogs</h2>
-      <Notification/>
       <p>{user.name} logged in <button onClick={handleLogout}>log out</button></p>
+      <Notification/>
+      <Switch>
+        <Route path="/users">
+        <h2>Users</h2>
+          <UserList />
+        </Route>
+        <Route path="/">
       {addBlog()}
       {blogs.map((blog) => <Blog key={blog.id} blog={blog} updateBlog={updateBlog} user={user} removeBlog={removeBlog} />)}
-    </div>
+        </Route>
+      </Switch>
+    </Router>
   );
 };
 
